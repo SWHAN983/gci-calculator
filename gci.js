@@ -384,7 +384,6 @@ function showTab(tab) {
   if (tab === 'report') {
     if (!lastResults) { alert('먼저 GCI를 계산해주세요.'); return; }
     calcSections.forEach(s => s && (s.style.display = 'none'));
-    document.querySelector('.hero').style.display = 'none';
     reportSection.classList.remove('hidden');
     navCalc.classList.remove('active');
     navReport.classList.add('active');
@@ -392,7 +391,6 @@ function showTab(tab) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
     calcSections.forEach(s => s && (s.style.display = ''));
-    document.querySelector('.hero').style.display = '';
     reportSection.classList.add('hidden');
     navCalc.classList.add('active');
     navReport.classList.remove('active');
