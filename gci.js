@@ -30,35 +30,33 @@ const EXAMPLES = [
 
 function loadExample(idx) {
   const ex = EXAMPLES[idx];
+
+  // Set dimension
   setDim(ex.dim);
-  document.getElementById('n1').value = ex.N1;
-  document.getElementById('n2').value = ex.N2;
-  document.getElementById('n3').value = ex.N3;
+
+  // Fill inputs
+  document.getElementById('n1').value   = ex.N1;
+  document.getElementById('n2').value   = ex.N2;
+  document.getElementById('n3').value   = ex.N3;
   document.getElementById('phi1').value = ex.phi1;
   document.getElementById('phi2').value = ex.phi2;
   document.getElementById('phi3').value = ex.phi3;
-  document.getElementById('fs').value = ex.Fs;
+  document.getElementById('fs').value   = ex.Fs;
   document.getElementById('pInit').value = ex.pInit;
 
-  // Animate buttons to show which was selected
+  // Highlight active button
   document.querySelectorAll('.ex-btn').forEach((b, i) => {
     b.classList.toggle('ex-btn-active', i === idx);
   });
 
-  // Show source label briefly
-  clearError();
-  const errBox = document.getElementById('errorBox');
-  errBox.classList.remove('hidden');
-  errBox.style.cssText = 'background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3);color:#a5b4fc;';
-  errBox.innerHTML = `📌 <strong>${ex.label}</strong>`;
-  setTimeout(() => {
-    errBox.classList.add('hidden');
-    errBox.style.cssText = '';
-  }, 4000);
+  // Show source text
+  const src = document.getElementById('exSrc');
+  if (src) src.textContent = ex.label;
 
-  // Auto-calculate
+  // Calculate
   calculate();
 }
+
 
 
 // ── Dimension toggle ─────────────────────────────────────────────

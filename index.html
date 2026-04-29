@@ -34,9 +34,9 @@
         <span class="logo-text">GCI <span class="logo-accent">Calculator</span></span>
       </div>
       <nav class="header-nav">
-        <a href="#calculator" class="nav-link active" id="navCalc" onclick="showTab('calc')">계산기</a>
-        <a href="#report" class="nav-link" id="navReport" onclick="showTab('report')">분석 리포트</a>
-        <a href="theory.html" class="nav-link" target="_blank">이론 문서</a>
+        <a href="#" class="nav-link active" id="navCalc" onclick="showTab('calc');return false;">계산기</a>
+        <a href="#" class="nav-link" id="navReport" onclick="showTab('report');return false;">분석 리포트</a>
+        <a href="theory.html" class="nav-link">이론 문서</a>
       </nav>
     </div>
   </header>
@@ -51,20 +51,20 @@
           <!-- Input Card -->
           <div class="card input-card">
             <div class="card-header">
-              <span class="card-icon">⚙️</span>
               <h2 class="card-title">입력 변수</h2>
             </div>
 
             <div class="example-row">
-              <span class="example-label">⚡ 예시 데이터</span>
+              <span class="example-label">예시 데이터</span>
               <div class="example-btns">
-                <button class="ex-btn" onclick="loadExample(0)" title="Celik et al. (2008) ASME JFE 논문 수록 예제 — 2D 해석">
-                  📄 Celik 2008 <span class="ex-tag">논문 원본</span>
+                <button type="button" class="ex-btn" id="exBtn0" onclick="loadExample(0)">
+                  예시 1
                 </button>
-                <button class="ex-btn" onclick="loadExample(1)" title="3D 비압축성 유동 격자 연구 예제">
-                  🧊 3D 격자 연구 <span class="ex-tag">3D</span>
+                <button type="button" class="ex-btn" id="exBtn1" onclick="loadExample(1)">
+                  예시 2
                 </button>
               </div>
+              <span class="example-src" id="exSrc">예시를 선택하면 자동으로 입력됩니다</span>
             </div>
 
             <div class="form-section">
@@ -137,7 +137,7 @@
 
             <button class="report-shortcut-btn hidden" id="reportShortcutBtn" onclick="showTab('report')">
               <svg viewBox="0 0 20 20" fill="none"><path d="M4 4h12v12H4z" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 8h6M7 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-              📋 분석 리포트 보기
+              분석 리포트 보기
             </button>
 
             <div id="errorBox" class="error-box hidden"></div>
@@ -146,7 +146,6 @@
           <!-- Results Card -->
           <div class="card result-card" id="resultCard">
             <div class="card-header">
-              <span class="card-icon">📊</span>
               <h2 class="card-title">계산 결과</h2>
               <div class="convergence-badge" id="convergenceBadge"></div>
             </div>
