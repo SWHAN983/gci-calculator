@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>GCI 이론 문서 — Grid Convergence Index</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css"/>
+  <style>
+    :root{--bg:#0c0e16;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.09);--border2:rgba(255,255,255,0.14);--text:#e8eaf0;--muted:#7b82a0;--dim:#4a5068;--accent:#6366f1;--accent2:#818cf8;--accent3:#a5b4fc;--green:#34d399;--yellow:#fbbf24;--red:#f87171;--r:14px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    /* orbs */
+    .orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.15;}
+    .o1{width:500px;height:500px;top:-150px;left:-150px;background:radial-gradient(circle,#6366f1,transparent);animation:f1 20s ease-in-out infinite;}
+    .o2{width:400px;height:400px;bottom:0;right:-100px;background:radial-gradient(circle,#818cf8,transparent);animation:f2 24s ease-in-out infinite;}
+    @keyframes f1{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,20px)}}
+    @keyframes f2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,-20px)}}
+    /* header */
+    header{position:sticky;top:0;z-index:100;background:rgba(12,14,22,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .hdr{max-width:900px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+    .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+    .logo svg{flex-shrink:0;}
+    .logo-text{font-size:1rem;font-weight:600;color:var(--text);}
+    .logo-accent{color:var(--accent2);}
+    .back-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:.83rem;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;}
+    .back-btn:hover{color:var(--text);border-color:var(--accent);background:rgba(99,102,241,.08);}
+    /* layout */
+    main{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:48px 24px 96px;}
+    /* hero */
+    .hero{margin-bottom:56px;}
+    .hero-badge{display:inline-block;padding:4px 14px;border-radius:100px;border:1px solid rgba(99,102,241,.35);background:rgba(99,102,241,.1);color:var(--accent3);font-size:.75rem;font-weight:500;letter-spacing:.05em;margin-bottom:18px;}
+    .hero-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;letter-spacing:-.02em;line-height:1.15;margin-bottom:14px;}
+    .hero-title .gr{background:linear-gradient(135deg,var(--accent2),#c4b5fd,var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero-sub{color:var(--muted);font-size:.95rem;line-height:1.7;}
+    /* refs table */
+    .ref-table{width:100%;border-collapse:collapse;font-size:.83rem;margin-top:16px;}
+    .ref-table th{text-align:left;color:var(--dim);font-weight:600;font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;padding:6px 10px;border-bottom:1px solid var(--border);}
+    .ref-table td{padding:9px 10px;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.03);}
+    .ref-table td:first-child{color:var(--accent3);font-weight:600;}
+    /* sections */
+    .doc-section{margin-bottom:48px;}
+    .sec-label{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+    .sec-title{font-size:1.3rem;font-weight:700;margin-bottom:6px;}
+    .sec-sub{font-size:.85rem;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+    .divider{border:none;border-top:1px solid var(--border);margin:48px 0;}
+    /* cards */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 24px;margin-bottom:14px;transition:border-color .25s;}
+    .card:hover{border-color:var(--border2);}
+    .card-title{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:6px;}
+    .card-body{font-size:.83rem;color:var(--muted);line-height:1.7;}
+    .card-body em{color:var(--accent3);font-style:normal;}
+    /* formula block */
+    .formula-block{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px 20px;margin:14px 0;overflow-x:auto;text-align:center;}
+    .formula-block .katex{color:var(--text);font-size:1.05em;}
+    .formula-block .katex-display{margin:0;}
+    /* label */
+    .var-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:14px;}
+    .var-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;}
+    .var-sym{font-family:'JetBrains Mono',monospace;color:var(--accent3);font-size:.85rem;font-weight:500;margin-bottom:3px;}
+    .var-desc{font-size:.75rem;color:var(--dim);line-height:1.5;}
+    /* step list */
+    .step-list{display:flex;flex-direction:column;gap:12px;}
+    .step-item{display:grid;grid-template-columns:40px 1fr;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px;transition:border-color .25s;}
+    .step-item:hover{border-color:rgba(99,102,241,.35);}
+    .step-n{font-size:1.5rem;font-weight:800;color:rgba(99,102,241,.25);font-family:'JetBrains Mono',monospace;line-height:1;}
+    .step-content .step-q{font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:4px;}
+    .step-content .step-t{font-size:.93rem;font-weight:700;margin-bottom:10px;}
+    .step-content .step-note{font-size:.8rem;color:var(--muted);line-height:1.65;margin-top:10px;}
+    .step-content .step-note em{color:var(--accent3);font-style:normal;}
+    /* grade table */
+    .grade-table{width:100%;border-collapse:collapse;font-size:.83rem;}
+    .grade-table th{text-align:left;color:var(--dim);font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;font-weight:600;padding:7px 10px;border-bottom:1px solid var(--border);}
+    .grade-table td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.03);}
+    .grade-table .g1{color:var(--green);}
+    .grade-table .g2{color:#6ee7b7;}
+    .grade-table .g3{color:var(--yellow);}
+    .grade-table .g4{color:var(--red);}
+    /* warn box */
+    .warn-box{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:14px 16px;font-size:.83rem;color:var(--muted);line-height:1.7;margin-bottom:14px;}
+    .warn-box strong{color:var(--yellow);}
+    /* footer */
+    footer{position:relative;z-index:1;border-top:1px solid var(--border);background:rgba(12,14,22,.8);}
+    .ftr{max-width:900px;margin:0 auto;padding:24px;font-size:.76rem;color:var(--dim);line-height:1.7;}
+    .ftr strong{color:var(--muted);}
+  </style>
+</head>
+<body>
+  <div class="orbs"><div class="orb o1"></div><div class="orb o2"></div></div>
+
+  <header>
+    <div class="hdr">
+      <a class="logo" href="index.html">
+        <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="url(#lg)"/><path d="M8 22L16 10l8 12" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 18h10" stroke="white" stroke-width="2.2" stroke-linecap="round"/><defs><linearGradient id="lg" x1="0" y1="0" x2="32" y2="32"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#818cf8"/></linearGradient></defs></svg>
+        <span class="logo-text">GCI <span class="logo-accent">Calculator</span></span>
+      </a>
+      <a class="back-btn" href="index.html">← 계산기로 돌아가기</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badge">이론 문서 · Theory Reference</div>
+      <h1 class="hero-title">Grid Convergence Index<br/><span class="gr">이론 및 계산 가이드</span></h1>
+      <p class="hero-sub">STAR-CCM+ Grid Sensitivity Test 적용 · Celik et al. (2008) ASME 표준 기반<br/>CFD 수치 해석에서 격자 이산화 불확실도를 정량적으로 추정하는 방법론입니다.</p>
+    </div>
+
+    <!-- 1. 개요 -->
+    <div class="doc-section">
+      <div class="sec-label">01 · 개요</div>
+      <h2 class="sec-title">GCI란 무엇인가?</h2>
+      <p class="sec-sub">격자(Mesh) 크기로 인한 수치 오차를 보수적으로 정량화하는 표준 방법입니다.</p>
+
+      <div class="card">
+        <div class="card-title">핵심 질문</div>
+        <div class="card-body">
+          <em>"현재 사용 중인 격자로 얻은 해가 격자 무관(grid-independent) 해에 얼마나 가까운가?"</em><br/><br/>
+          CFD 해석에서 격자를 무한히 세밀하게 만들수록 수치 해는 이론적 정확해에 수렴합니다. GCI는 현실적인 계산 자원으로 사용하는 격자에서 발생하는 <em>이산화 불확실도</em>를 95% 신뢰 수준으로 추정합니다.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">관련 참고 문헌</div>
+        <table class="ref-table">
+          <tr><th>문헌</th><th>내용</th></tr>
+          <tr><td>Roache (1994)</td><td>GCI 최초 제안. ASME J. Fluids Eng. 116(3), 405–413</td></tr>
+          <tr><td>Celik et al. (2008)</td><td>ASME 표준 GCI 절차. J. Fluids Eng. 130, 078001 ← 이 계산기의 기준</td></tr>
+          <tr><td>ITTC (2021)</td><td>선박/해양 분야 GCI 적용 가이드</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 2. 핵심 개념 -->
+    <div class="doc-section">
+      <div class="sec-label">02 · 핵심 개념</div>
+      <h2 class="sec-title">이산화 오차와 수렴 차수</h2>
+      <p class="sec-sub">수치 해는 격자 크기 h가 작아질수록 정확해에 가까워집니다.</p>
+
+      <div class="card">
+        <div class="card-title">수치 해의 구조</div>
+        <div class="formula-block">\[ \phi_{\text{numerical}} = \phi_{\text{exact}} + C \cdot h^p + O(h^{p+1}) \]</div>
+        <div class="card-body">
+          <div class="var-grid">
+            <div class="var-item"><div class="var-sym">φ_exact</div><div class="var-desc">이론적 정확해</div></div>
+            <div class="var-item"><div class="var-sym">C</div><div class="var-desc">비례 상수</div></div>
+            <div class="var-item"><div class="var-sym">h</div><div class="var-desc">대표 격자 크기</div></div>
+            <div class="var-item"><div class="var-sym">p</div><div class="var-desc">수치 기법의 정확도 차수</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">대표 격자 크기 h 계산</div>
+        <div class="formula-block">\[ h_{3D} = \left(\frac{V_{\text{domain}}}{N}\right)^{1/3} \qquad h_{2D} = \left(\frac{A_{\text{domain}}}{N}\right)^{1/2} \]</div>
+        <div class="card-body">
+          N: 전체 셀 수 &nbsp;|&nbsp; V: 도메인 체적 &nbsp;|&nbsp; A: 도메인 면적<br/>
+          STAR-CCM+에서 Base Size를 균일하게 조정하는 경우: <em>r = BaseSize_coarse / BaseSize_fine</em> 으로 근사 가능
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 3. 계산 절차 -->
+    <div class="doc-section">
+      <div class="sec-label">03 · 계산 절차</div>
+      <h2 class="sec-title">5단계 GCI 계산 절차</h2>
+      <p class="sec-sub">세 격자(Coarse / Medium / Fine)의 결과로부터 순서대로 계산합니다. h₁ &lt; h₂ &lt; h₃</p>
+
+      <div class="step-list">
+
+        <div class="step-item">
+          <div class="step-n">01</div>
+          <div class="step-content">
+            <div class="step-q">격자가 얼마나 촘촘한가?</div>
+            <div class="step-t">격자 정제 비율</div>
+            <div class="formula-block">\[ r_{21} = \frac{h_2}{h_1}, \qquad r_{32} = \frac{h_3}{h_2} \]</div>
+            <div class="step-note">권장 기준: <em>r ≥ 1.3</em>. 비율이 너무 작으면 격자 간 차이가 작아 수렴 차수를 정확히 계산할 수 없습니다.</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-n">02</div>
+          <div class="step-content">
+            <div class="step-q">얼마나 빠르게 수렴하는가?</div>
+            <div class="step-t">관측 수렴 차수 p (고정점 반복법)</div>
+            <div class="formula-block">\[ p = \frac{1}{\ln r_{21}} \left| \ln\!\left|\frac{\varepsilon_{32}}{\varepsilon_{21}}\right| + \ln\!\left(\frac{r_{21}^p - s}{r_{32}^p - s}\right) \right| \]</div>
+            <div class="formula-block">\[ \varepsilon_{21} = \phi_2 - \phi_1, \quad \varepsilon_{32} = \phi_3 - \phi_2, \quad s = \operatorname{sgn}\!\left(\frac{\varepsilon_{32}}{\varepsilon_{21}}\right) \]</div>
+            <div class="step-note">수렴 판정: <em>ε₃₂/ε₂₁ &gt; 0</em> → 단조 수렴(신뢰 가능) &nbsp;|&nbsp; <em>ε₃₂/ε₂₁ &lt; 0</em> → 진동 수렴(신뢰도 낮음)<br/>STAR-CCM+ 2차 기법의 이론값: p ≈ 2</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-n">03</div>
+          <div class="step-content">
+            <div class="step-q">완벽한 격자라면 결과가 얼마일까?</div>
+            <div class="step-t">Richardson 외삽 — 격자 독립 해 추정</div>
+            <div class="formula-block">\[ \phi_{\text{ext}}^{21} = \frac{r_{21}^p\,\phi_1 - \phi_2}{r_{21}^p - 1} \]</div>
+            <div class="step-note">격자 크기를 0으로 보낸 경우의 이론적 해를 수학적으로 추정한 값입니다.</div>
+          </div>
+        </div>
+
+        <div class="step-item" style="border-color:rgba(99,102,241,.3);background:rgba(99,102,241,.05);">
+          <div class="step-n" style="color:rgba(99,102,241,.4);">04</div>
+          <div class="step-content">
+            <div class="step-q">현재 격자 오차는 최대 몇 %?</div>
+            <div class="step-t">GCI 계산 — 핵심 단계</div>
+            <div class="formula-block">\[ e_a^{21} = \left|\frac{\phi_1 - \phi_2}{\phi_1}\right| \times 100\% \]</div>
+            <div class="formula-block">\[ \mathrm{GCI}_{\text{fine}}^{21} = \frac{F_s \cdot e_a^{21}}{r_{21}^p - 1}, \qquad F_s = 1.25 \text{ (3개 격자 표준)} \]</div>
+            <div class="step-note">안전계수 <em>Fₛ = 1.25</em>를 포함한 보수적 오차 추정값입니다. 95% 신뢰 수준으로 격자 이산화 불확실도를 정량화합니다.</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-n">05</div>
+          <div class="step-content">
+            <div class="step-q">이 GCI 값 자체를 믿을 수 있는가?</div>
+            <div class="step-t">점근 수렴 범위 검증</div>
+            <div class="formula-block">\[ \text{Check} = \frac{\mathrm{GCI}_{32}}{r_{21}^p \cdot \mathrm{GCI}_{21}} \approx 1.0 \]</div>
+            <div class="step-note">이 값이 <em>1.0 ± 0.05</em> 범위 내이면 세 격자 모두 수치 점근 범위에 진입해 있으며, GCI 계산 결과의 신뢰도가 높습니다.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 4. 결과 해석 -->
+    <div class="doc-section">
+      <div class="sec-label">04 · 결과 해석</div>
+      <h2 class="sec-title">GCI 값 판정 기준</h2>
+      <p class="sec-sub">GCI_fine = 2.5% → Fine 격자 결과가 격자 독립 해로부터 최대 2.5% 이내 (95% 신뢰 수준)</p>
+
+      <div class="card">
+        <table class="grade-table">
+          <tr><th>GCI_fine 값</th><th>판정</th><th>권장 조치</th></tr>
+          <tr><td class="g1">&lt; 1%</td><td class="g1">🟢 우수</td><td>격자 독립성 달성. 결과를 신뢰할 수 있음</td></tr>
+          <tr><td class="g2">1 – 3%</td><td class="g2">🟡 양호</td><td>공학적으로 수용 가능. 불확실도를 보고서에 명시</td></tr>
+          <tr><td class="g3">3 – 5%</td><td class="g3">🟠 보통</td><td>추가 정제 권장. 국소 정제(Local refinement) 적용 고려</td></tr>
+          <tr><td class="g4">&gt; 5%</td><td class="g4">🔴 불량</td><td>격자 독립성 미달. Fine 격자 대폭 정제 필요</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <!-- 5. 주의사항 -->
+    <div class="doc-section">
+      <div class="sec-label">05 · 주의사항</div>
+      <h2 class="sec-title">GCI의 한계와 적용 조건</h2>
+
+      <div class="warn-box"><strong>① 오차 추정기이지 정확한 오차가 아닙니다.</strong> 이산화 오차만 추정하며, 난류 모델 오차 등 모델링 오차는 포함하지 않습니다.</div>
+      <div class="warn-box"><strong>② 점근 수렴 범위 진입이 전제됩니다.</strong> 격자가 아직 수치 점근 범위에 진입하지 않으면 GCI가 과대 또는 과소 추정될 수 있습니다.</div>
+      <div class="warn-box"><strong>③ 관측 차수 p 범위를 확인하세요.</strong> 일반적으로 0 &lt; p ≤ p_formal + 1 범위를 벗어나면 점근 범위 미진입으로 판단합니다.</div>
+      <div class="warn-box"><strong>④ 진동 수렴 시 주의.</strong> ε₃₂/ε₂₁ &lt; 0이면 GCI 신뢰성이 떨어집니다. 격자 전략을 재검토하세요.</div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="ftr">
+      <strong>Celik, I.B. et al. (2008).</strong> Procedure for Estimation and Reporting of Uncertainty Due to Discretization in CFD Applications. <em>ASME J. Fluids Eng.</em>, 130(7), 078001.<br/>
+      Roache, P.J. (1994). Perspective: A Method for Uniform Reporting of Grid Refinement Studies. <em>ASME J. Fluids Eng.</em>, 116(3), 405–413.
+    </div>
+  </footer>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false})"></script>
+</body>
+</html>

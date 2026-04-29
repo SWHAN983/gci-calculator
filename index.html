@@ -7,6 +7,7 @@
   <meta name="description" content="STAR-CCM+ Grid Sensitivity Test를 위한 Grid Convergence Index (GCI) 계산기. Celik et al. (2008) 표준 절차 기반." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -35,7 +36,7 @@
       <nav class="header-nav">
         <a href="#calculator" class="nav-link active" id="navCalc" onclick="showTab('calc')">계산기</a>
         <a href="#report" class="nav-link" id="navReport" onclick="showTab('report')">분석 리포트</a>
-        <a href="GCI_Theory.md" class="nav-link" target="_blank">이론 문서</a>
+        <a href="theory.html" class="nav-link" target="_blank">이론 문서</a>
       </nav>
     </div>
   </header>
@@ -236,46 +237,78 @@
       </div>
     </section>
 
-    <!-- Theory Quick Reference -->
+    <!-- Theory Quick Reference (redesigned with KaTeX) -->
     <section class="section theory-section" id="theorySection">
       <div class="container">
-        <h2 class="section-title">계산 절차 요약 <span class="badge">Celik et al. 2008</span></h2>
-        <div class="steps-grid">
-          <div class="step-card">
-            <div class="step-num">1</div>
-            <div class="step-content">
-              <div class="step-title">대표 격자 크기 & 정제 비율</div>
-              <div class="step-formula">h = (V/N)^(1/3)<br/>r₂₁ = h₂/h₁ ≥ 1.3</div>
+
+        <div class="theory-header">
+          <div>
+            <h2 class="theory-title">계산 절차 <span class="gradient-text">요약</span></h2>
+            <p class="theory-sub">5단계 순서로 GCI를 계산합니다 — 각 단계가 어떤 질문에 답하는지 확인하세요</p>
+          </div>
+          <span class="theory-ref">Celik et al. (2008) · ASME JFE 130(7)</span>
+        </div>
+
+        <div class="sf-flow">
+
+          <div class="sf-card">
+            <div class="sf-num">01</div>
+            <div class="sf-body">
+              <div class="sf-question">격자가 얼마나 촘촘한가?</div>
+              <div class="sf-title">대표 격자 크기 &amp; 정제 비율</div>
+              <div class="sf-formula">\[ h = \left(\frac{V_{\text{domain}}}{N}\right)^{\!1/3}, \qquad r_{21} = \frac{h_2}{h_1} \geq 1.3 \]</div>
+              <div class="sf-note">셀 수 <em>N</em>으로부터 대표 격자 간격 <em>h</em>를 구하고, 격자 간 정제 비율 <em>r</em>이 1.3 이상인지 확인합니다.</div>
             </div>
           </div>
-          <div class="step-card">
-            <div class="step-num">2</div>
-            <div class="step-content">
-              <div class="step-title">관측 수렴 차수 (반복 계산)</div>
-              <div class="step-formula">p = |ln|ε₃₂/ε₂₁| + q(p)| / ln(r₂₁)</div>
+
+          <div class="sf-connector"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16m-6-6l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+          <div class="sf-card">
+            <div class="sf-num">02</div>
+            <div class="sf-body">
+              <div class="sf-question">얼마나 빠르게 수렴하는가?</div>
+              <div class="sf-title">관측 수렴 차수 <em>p</em></div>
+              <div class="sf-formula">\[ p = \frac{1}{\ln r_{21}} \left| \ln\!\left|\frac{\varepsilon_{32}}{\varepsilon_{21}}\right| + \ln\!\left(\frac{r_{21}^{\,p}-s}{r_{32}^{\,p}-s}\right) \right| \]</div>
+              <div class="sf-note">격자를 세밀하게 할수록 오차가 줄어드는 속도를 나타냅니다. 2차 기법은 이론적으로 <em>p</em> ≈ 2 입니다.</div>
             </div>
           </div>
-          <div class="step-card">
-            <div class="step-num">3</div>
-            <div class="step-content">
-              <div class="step-title">Richardson 외삽값</div>
-              <div class="step-formula">φ_ext = (r^p · φ₁ − φ₂) / (r^p − 1)</div>
+
+          <div class="sf-connector"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16m-6-6l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+          <div class="sf-card">
+            <div class="sf-num">03</div>
+            <div class="sf-body">
+              <div class="sf-question">무한히 촘촘한 격자라면 결과는?</div>
+              <div class="sf-title">Richardson 외삽 — 격자 독립 해 추정</div>
+              <div class="sf-formula">\[ \phi_{\text{ext}}^{21} = \frac{r_{21}^{\,p}\,\phi_1 - \phi_2}{r_{21}^{\,p} - 1} \]</div>
+              <div class="sf-note">수렴 차수를 이용해 격자 크기를 0으로 보낸 경우의 이론적 해를 수학적으로 추정합니다.</div>
             </div>
           </div>
-          <div class="step-card">
-            <div class="step-num">4</div>
-            <div class="step-content">
-              <div class="step-title">GCI 계산</div>
-              <div class="step-formula">GCI_fine = Fₛ · e_a / (r^p − 1)</div>
+
+          <div class="sf-connector"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16m-6-6l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+          <div class="sf-card sf-card-highlight">
+            <div class="sf-num">04</div>
+            <div class="sf-body">
+              <div class="sf-question">현재 격자의 오차는 최대 몇 %인가?</div>
+              <div class="sf-title">Grid Convergence Index</div>
+              <div class="sf-formula">\[ \mathrm{GCI}_{\text{fine}}^{21} = \frac{F_s \cdot e_a^{21}}{r_{21}^{\,p} - 1}, \qquad e_a^{21} = \left|\frac{\phi_1 - \phi_2}{\phi_1}\right| \]</div>
+              <div class="sf-note">안전계수 <em>F<sub>s</sub></em> = 1.25를 포함한 보수적 오차 추정값입니다. 95% 신뢰 수준으로 격자 이산화 불확실도를 정량화합니다.</div>
             </div>
           </div>
-          <div class="step-card">
-            <div class="step-num">5</div>
-            <div class="step-content">
-              <div class="step-title">점근 수렴 확인</div>
-              <div class="step-formula">GCI₃₂ / (r^p · GCI₂₁) ≈ 1.0</div>
+
+          <div class="sf-connector"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4v16m-6-6l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+          <div class="sf-card">
+            <div class="sf-num">05</div>
+            <div class="sf-body">
+              <div class="sf-question">이 GCI 값 자체를 믿을 수 있는가?</div>
+              <div class="sf-title">점근 수렴 범위 검증</div>
+              <div class="sf-formula">\[ \frac{\mathrm{GCI}_{32}}{r_{21}^{\,p}\cdot\mathrm{GCI}_{21}} \approx 1.0 \]</div>
+              <div class="sf-note">이 값이 1.0에 가까울수록 세 격자 모두 수치 점근 범위에 진입해 있으며, GCI 계산 결과의 신뢰도가 높습니다.</div>
             </div>
           </div>
+
         </div>
       </div>
     </section>
@@ -481,6 +514,9 @@
     </div>
   </footer>
 
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false})"></script>
   <script src="gci.js"></script>
 </body>
 </html>
