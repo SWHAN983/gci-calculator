@@ -277,9 +277,103 @@ function renderResults(R) {
       ? `⚠️ <strong>진동 수렴 감지</strong>: GCI 신뢰도가 낮습니다. 격자 전략을 재검토하세요.`
       : `격자 독립 해로부터 최대 <strong>${fmtPct(gci)}</strong> 오차 범위에 있음 (95% 신뢰 수준)`);
 
+  // Mesh Selection Guide
+  renderMeshGuide(R);
+
   // Chart
   drawChart(R);
 }
+
+// ── Mesh Selection Guide ─────────────────────────────────────────
+function renderMeshGuide(R) {
+  const el = document.getElementById('meshGuide');
+  if (!el) return;
+
+  const fmtPct = v => isFinite(v) ? v.toFixed(3) + '%' : 'N/A';
+  const fmtN   = n => n.toLocaleString('ko-KR');
+
+  // Cost: assume compute cost ∝ N (cell count)
+  const costFine   = R.N1;
+  const costMed    = R.N2;
+  const costCoarse = R.N3;
+
+  // Relative cost vs Fine (Fine = 100%)
+  const pctMed    = (costMed    / costFine * 100).toFixed(0);
+  const pctCoarse = (costCoarse / costFine * 100).toFixed(0);
+  const saveMed    = (100 - pctMed).toFixed(0);
+  const saveCoarse = (100 - pctCoarse).toFixed(0);
+
+  // GCI values
+  const gciFine   = R.gciFine21;    // error of Fine result
+  const gciMed    = R.gciMed32;     // error of Medium result
+
+  // Grade function
+  function grade(gci) {
+    if (gci < 1)  return { cls: 'grade-excellent', label: '우수',  ok: true  };
+    if (gci < 3)  return { cls: 'grade-good',      label: '양호',  ok: true  };
+    if (gci < 5)  return { cls: 'grade-moderate',  label: '보통',  ok: false };
+    return              { cls: 'grade-poor',       label: '불량',  ok: false };
+  }
+
+  const gF = grade(gciFine);
+  const gM = grade(gciMed);
+
+  // Build recommendation
+  let rec, recClass;
+  if (R.convType !== 'monotonic') {
+    rec = '수렴 유형이 단조 수렴이 아닙니다. 격자 독립성 판단 전에 수렴 거동을 먼저 점검하세요.';
+    recClass = 'mesh-rec-warn';
+  } else if (gM.ok && gciMed < 3) {
+    rec = `Medium 격자(${fmtN(R.N2)}셀) 사용 권장 — GCI = ${fmtPct(gciMed)}로 충분히 신뢰 가능하며, Fine 대비 계산 비용을 약 ${saveMed}% 절감할 수 있습니다.`;
+    recClass = 'mesh-rec-good';
+  } else if (gM.ok && gciMed < 5) {
+    rec = `예비 검토에는 Medium 격자(${fmtN(R.N2)}셀)로 충분합니다(GCI = ${fmtPct(gciMed)}). 최종 보고용 결과는 Fine 격자 사용을 권장합니다.`;
+    recClass = 'mesh-rec-moderate';
+  } else {
+    rec = `Medium 격자의 GCI = ${fmtPct(gciMed)}로 오차가 큽니다. Fine 격자(${fmtN(R.N1)}셀) 사용이 필요합니다.`;
+    recClass = 'mesh-rec-poor';
+  }
+
+  // Render
+  el.innerHTML = `
+    <table class="mesh-guide-table">
+      <thead>
+        <tr>
+          <th>격자</th>
+          <th>셀 수</th>
+          <th>GCI 오차</th>
+          <th>판정</th>
+          <th>Fine 대비 비용</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="mesh-row-coarse">
+          <td class="mesh-row-name">Coarse</td>
+          <td>${fmtN(R.N3)}</td>
+          <td class="col-mono">—</td>
+          <td><span class="mesh-grade">기준 없음</span></td>
+          <td class="col-mono mesh-save">약 ${saveCoarse}% 절감</td>
+        </tr>
+        <tr class="mesh-row-medium">
+          <td class="mesh-row-name">Medium</td>
+          <td>${fmtN(R.N2)}</td>
+          <td class="col-mono ${gM.cls}">${fmtPct(gciMed)}</td>
+          <td><span class="mesh-grade ${gM.cls}">${gM.label}</span></td>
+          <td class="col-mono mesh-save">약 ${saveMed}% 절감</td>
+        </tr>
+        <tr class="mesh-row-fine">
+          <td class="mesh-row-name">Fine</td>
+          <td>${fmtN(R.N1)}</td>
+          <td class="col-mono ${gF.cls}">${fmtPct(gciFine)}</td>
+          <td><span class="mesh-grade ${gF.cls}">${gF.label}</span></td>
+          <td class="col-mono mesh-baseline">기준 (100%)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mesh-rec ${recClass}">${rec}</div>`;
+}
+
+
 
 function setText(id, html) {
   const el = document.getElementById(id);

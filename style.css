@@ -428,6 +428,52 @@ body {
 }
 .summary-box strong { color: var(--accent3); }
 
+/* === Mesh Guide Table === */
+.mesh-guide { margin-top: 4px; }
+.mesh-guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.81rem;
+  margin-bottom: 10px;
+}
+.mesh-guide-table thead th {
+  text-align: left;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.mesh-guide-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); }
+.mesh-guide-table tbody td { padding: 8px 8px; vertical-align: middle; }
+.mesh-row-name { font-weight: 600; color: var(--text); }
+.mesh-row-coarse .mesh-row-name { color: var(--red); }
+.mesh-row-medium .mesh-row-name { color: var(--yellow); }
+.mesh-row-fine   .mesh-row-name { color: var(--accent3); }
+.col-mono { font-family: 'JetBrains Mono', monospace; }
+.mesh-save    { color: var(--green); font-size: 0.78rem; }
+.mesh-baseline { color: var(--text-dim); font-size: 0.78rem; }
+.mesh-grade {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.05);
+}
+.mesh-rec {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  border: 1px solid;
+}
+.mesh-rec-good     { background: rgba(52,211,153,0.07);  border-color: rgba(52,211,153,0.25);  color: #6ee7b7; }
+.mesh-rec-moderate { background: rgba(251,191,36,0.07);  border-color: rgba(251,191,36,0.25);  color: var(--yellow); }
+.mesh-rec-poor     { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.25); color: var(--red); }
+.mesh-rec-warn     { background: rgba(251,191,36,0.07);  border-color: rgba(251,191,36,0.25);  color: var(--yellow); }
+
 /* === Copy Button === */
 .copy-btn {
   display: flex;
