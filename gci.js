@@ -6,6 +6,61 @@
 let currentDim = 3;
 let lastResults = null;
 
+// ── Example datasets ─────────────────────────────────────────────
+// Example 0: Celik et al. (2008) ASME J. Fluids Eng. 130(7), 078001
+//   Table 1 — 2D lid-driven cavity flow, velocity at a point
+//   This is the standard reference example used worldwide for GCI validation.
+// Example 1: 3D incompressible flow — drag coefficient study
+const EXAMPLES = [
+  {
+    dim: 2,
+    N1: 18000, N2: 8000, N3: 4500,
+    phi1: 6.063, phi2: 5.972, phi3: 5.863,
+    Fs: 1.25, pInit: 2,
+    label: 'Celik et al. (2008) ASME JFE — 2D 공동 유동 속도 (논문 Table 1)'
+  },
+  {
+    dim: 3,
+    N1: 2000000, N2: 700000, N3: 250000,
+    phi1: 0.97253, phi2: 0.96891, phi3: 0.96012,
+    Fs: 1.25, pInit: 2,
+    label: '3D 저항 계수 격자 연구 예제 (Fine ≈ 200만 셀)'
+  }
+];
+
+function loadExample(idx) {
+  const ex = EXAMPLES[idx];
+  setDim(ex.dim);
+  document.getElementById('n1').value = ex.N1;
+  document.getElementById('n2').value = ex.N2;
+  document.getElementById('n3').value = ex.N3;
+  document.getElementById('phi1').value = ex.phi1;
+  document.getElementById('phi2').value = ex.phi2;
+  document.getElementById('phi3').value = ex.phi3;
+  document.getElementById('fs').value = ex.Fs;
+  document.getElementById('pInit').value = ex.pInit;
+
+  // Animate buttons to show which was selected
+  document.querySelectorAll('.ex-btn').forEach((b, i) => {
+    b.classList.toggle('ex-btn-active', i === idx);
+  });
+
+  // Show source label briefly
+  clearError();
+  const errBox = document.getElementById('errorBox');
+  errBox.classList.remove('hidden');
+  errBox.style.cssText = 'background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3);color:#a5b4fc;';
+  errBox.innerHTML = `📌 <strong>${ex.label}</strong>`;
+  setTimeout(() => {
+    errBox.classList.add('hidden');
+    errBox.style.cssText = '';
+  }, 4000);
+
+  // Auto-calculate
+  calculate();
+}
+
+
 // ── Dimension toggle ─────────────────────────────────────────────
 function setDim(d) {
   currentDim = d;
